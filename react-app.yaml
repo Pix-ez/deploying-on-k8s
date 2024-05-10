@@ -1,0 +1,83 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: react-app-deployment
+#   labels:
+#     app: react-app
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: react-app
+#   template:
+#     metadata:
+#       labels:
+#         app: react-app
+#     spec:
+#       containers:
+#       - name: react-app
+#         image: rahult046/my-app:react-app-v1
+#         ports:
+#         - containerPort: 5173
+#         env:
+#         - name: VITE_API_ENDPOINT
+#          valueFrom:
+#            configMapKeyRef:
+#              name: flask-config
+#              key: api-endpoint
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: react-app-service
+# spec:
+#   type: NodePort 
+#   selector:
+#     app: react-app
+#   ports:
+#     - protocol: TCP
+#       port: 5173
+#       targetPort: 5173
+#       nodePort: 30100
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-app-deployment
+  labels:
+    app: react-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+      - name: react-app
+        image: rahult046/my-app:react-app-v1
+        ports:
+        - containerPort: 80
+        env:
+        - name: VITE_API_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: flask-config
+              key: api-endpoint
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-app-service
+spec:
+  type: NodePort
+  selector:
+    app: react-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30100
